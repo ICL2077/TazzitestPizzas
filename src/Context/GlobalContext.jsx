@@ -29,34 +29,63 @@ export default function GlobalContextProvider({ children }) {
 
     const [curSorting, setCurSorting] = React.useState(listOfSorting[0]);
 
-    // fetch logic
+    // categories logic
     React.useEffect(() => {
         setLoading(true);
 
         async function fetchData() {
             try {
                 const url = new URL(
-                    `https://68da669423ebc87faa2fff70.mockapi.io/pizzas?limit=4&${
-                        curCategory > 0 ? `category=${curCategory}` : ''
+                    `https://68da669423ebc87faa2fff70.mockapi.io/pizzas?page=1&limit=4&${
+                        curCategory && `category=${curCategory}`
                     }`,
                 );
 
-                url.searchParams.append('page', curPage);
                 url.searchParams.append('sortBy', curSorting.type);
-                url.searchParams.append('title', searchValue);
                 url.searchParams.append('order', curSorting.order);
 
                 const { data } = await axios.get(url);
 
                 setLoading(false);
                 setPizzas(data);
+                setCurPage(1);
+                setSearchValue('');
             } catch (error) {
                 console.log('Error -', error);
+                setPizzas([]);
             }
         }
 
         fetchData();
-    }, [curCategory, curSorting, searchValue, curPage]);
+    }, [curCategory]);
+
+    // pagination, sorting, searching logic
+    React.useEffect(() => {
+        setLoading(true);
+
+        async function fecthData() {
+            try {
+                const url = new URL(
+                    `https://68da669423ebc87faa2fff70.mockapi.io/pizzas?page=${curPage}&limit=4`,
+                );
+
+                curCategory && url.searchParams.append('category', curCategory);
+                url.searchParams.append('sortBy', curSorting.type);
+                url.searchParams.append('title', searchValue);
+                url.searchParams.append('order', curSorting.order);
+
+                const { data } = await axios.get(url);
+
+                setPizzas(data);
+                setLoading(false);
+            } catch (error) {
+                console.log(error);
+                setPizzas([]);
+            }
+        }
+
+        fecthData();
+    }, [curPage, searchValue, curSorting]);
 
     // first fetch
     React.useEffect(() => {
@@ -65,14 +94,19 @@ export default function GlobalContextProvider({ children }) {
         async function fetchData() {
             try {
                 const url = new URL(
-                    'https://68da669423ebc87faa2fff70.mockapi.io/pizzas?page=1&limit=4',
+                    `https://68da669423ebc87faa2fff70.mockapi.io/pizzas?page=1&limit=4`,
                 );
+
+                url.searchParams.append('sortBy', curSorting.type);
+                url.searchParams.append('order', curSorting.order);
+
                 const { data } = await axios.get(url);
 
                 setLoading(false);
                 setPizzas(data);
             } catch (error) {
                 alert('Error - ', error);
+                setPizzas([]);
             }
         }
         fetchData();

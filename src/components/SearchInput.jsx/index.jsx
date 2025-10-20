@@ -5,6 +5,7 @@ import styles from './SearchInput.module.scss';
 
 export default function SearchInput() {
     const { setSearchValue } = React.useContext(GlobalContext);
+
     const [searchValueInpt, setSearchValueInpt] = React.useState('');
 
     const handleInputChange = (event) => {
@@ -13,6 +14,7 @@ export default function SearchInput() {
 
     const handleEnterKey = () => {
         setSearchValue(searchValueInpt);
+        setSearchValueInpt('');
     };
 
     return (
