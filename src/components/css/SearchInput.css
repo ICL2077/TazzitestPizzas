@@ -1,0 +1,31 @@
+.root {
+  margin: 0 50px;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 1040px) {
+  .root {
+    margin: 0 20px;
+  }
+}
+.root input {
+  border: 1px solid black;
+  border-radius: 20px;
+  padding: 10px 15px;
+  font-size: 14px;
+  width: 50%;
+  transition: all 0.15s ease-in-out;
+}
+@media (max-width: 1040px) {
+  .root input {
+    width: 100%;
+    padding: 5px 10px;
+  }
+}
+.root input:focus {
+  width: 100%;
+  padding: 10px 15px;
+  border: 2px solid black;
+}

@@ -1,0 +1,1 @@
+.root{display:flex;justify-content:center;align-items:center}.root li{display:inline-flex}.root li a{text-align:center;line-height:25px;margin:0 5px;cursor:pointer;border:1px solid #ff731c;color:#ff731c;border-radius:30px;width:30px;height:30px}.root li a:hover{background-color:#ff731c;color:#fff}.root :global .selected a{background-color:#ff731c;color:#fff}
