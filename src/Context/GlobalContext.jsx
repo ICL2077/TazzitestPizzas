@@ -1,6 +1,37 @@
 import axios from 'axios';
 import React from 'react';
 
+// Конфигурация axios с повторными запросами
+const axiosInstance = axios.create({
+    timeout: 10000,
+    retry: 3,
+    retryDelay: 1000,
+});
+
+// Интерцептор для повторных запросов
+axiosInstance.interceptors.response.use(null, async (error) => {
+    const config = error.config;
+
+    if (!config || !config.retry) {
+        return Promise.reject(error);
+    }
+
+    config.__retryCount = config.__retryCount || 0;
+
+    if (config.__retryCount >= config.retry) {
+        return Promise.reject(error);
+    }
+
+    config.__retryCount += 1;
+
+    const delay = new Promise((resolve) => {
+        setTimeout(() => resolve(), config.retryDelay || 1000);
+    });
+
+    await delay;
+    return axiosInstance(config);
+});
+
 export const GlobalContext = React.createContext();
 
 export default function GlobalContextProvider({ children }) {
@@ -32,24 +63,25 @@ export default function GlobalContextProvider({ children }) {
     // categories logic
     React.useEffect(() => {
         setLoading(true);
+        setSearchValue('');
+        setCurPage(1);
 
         async function fetchData() {
             try {
                 const url = new URL(
-                    `https://68da669423ebc87faa2fff70.mockapi.io/pizzas?page=1&limit=4&${
-                        curCategory && `category=${curCategory}`
-                    }`,
+                    `https://68da669423ebc87faa2fff70.mockapi.io/pizzas?page=1&limit=4`,
                 );
 
+                curCategory && url.searchParams.append('category', curCategory);
                 url.searchParams.append('sortBy', curSorting.type);
                 url.searchParams.append('order', curSorting.order);
 
-                const { data } = await axios.get(url);
+                const { data } = await axiosInstance.get(url.toString(), {
+                    timeout: 10000,
+                });
 
                 setLoading(false);
                 setPizzas(data);
-                setCurPage(1);
-                setSearchValue('');
             } catch (error) {
                 console.log('Error -', error);
                 setPizzas([]);
@@ -63,7 +95,7 @@ export default function GlobalContextProvider({ children }) {
     React.useEffect(() => {
         setLoading(true);
 
-        async function fecthData() {
+        async function fetchData() {
             try {
                 const url = new URL(
                     `https://68da669423ebc87faa2fff70.mockapi.io/pizzas?page=${curPage}&limit=4`,
@@ -71,46 +103,22 @@ export default function GlobalContextProvider({ children }) {
 
                 curCategory && url.searchParams.append('category', curCategory);
                 url.searchParams.append('sortBy', curSorting.type);
-                url.searchParams.append('title', searchValue);
+                searchValue && url.searchParams.append('title', searchValue);
                 url.searchParams.append('order', curSorting.order);
 
-                const { data } = await axios.get(url);
+                const { data } = await axiosInstance.get(url.toString(), {
+                    timeout: 10000,
+                });
 
-                setPizzas(data);
                 setLoading(false);
+                setPizzas(data);
             } catch (error) {
                 console.log(error);
-                setPizzas([]);
             }
         }
 
-        fecthData();
-    }, [curPage, searchValue, curSorting]);
-
-    // first fetch
-    React.useEffect(() => {
-        setLoading(true);
-
-        async function fetchData() {
-            try {
-                const url = new URL(
-                    `https://68da669423ebc87faa2fff70.mockapi.io/pizzas?page=1&limit=4`,
-                );
-
-                url.searchParams.append('sortBy', curSorting.type);
-                url.searchParams.append('order', curSorting.order);
-
-                const { data } = await axios.get(url);
-
-                setLoading(false);
-                setPizzas(data);
-            } catch (error) {
-                alert('Error - ', error);
-                setPizzas([]);
-            }
-        }
         fetchData();
-    }, []);
+    }, [curPage, searchValue, curSorting]);
 
     return (
         <GlobalContext.Provider
