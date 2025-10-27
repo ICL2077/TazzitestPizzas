@@ -48,7 +48,7 @@ export default function GlobalContextProvider({ children }) {
     const [pizzas, setPizzas] = React.useState([]);
 
     //arr of categories
-    const categories = ['Все', 'Мясные', 'Вегетерианские'];
+    const categories = ['Все', 'Мясные', 'Вегетерианские', 'Гриль', 'Острые', 'Закрытые'];
     const [curCategory, setCurCategory] = React.useState(0);
 
     //sorting logic
@@ -84,7 +84,6 @@ export default function GlobalContextProvider({ children }) {
                 setPizzas(data);
             } catch (error) {
                 console.log('Error -', error);
-                setPizzas([]);
             }
         }
 

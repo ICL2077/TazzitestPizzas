@@ -4,19 +4,12 @@ import { GlobalContext } from '../Context/GlobalContext';
 import PizzaCard from '../components/PizzaCard';
 import Skeleton from '../components/PizzaCard/Skeleton';
 import Pagination from '../components/Pagination';
+import Categories from '../components/Categories';
 
 export default function PizzasPage() {
     // context values
-    const {
-        searchValue,
-        categories,
-        curCategory,
-        setCurCategory,
-        listOfSorting,
-        setCurSorting,
-        pizzas,
-        loading,
-    } = React.useContext(GlobalContext);
+    const { searchValue, listOfSorting, setCurSorting, pizzas, loading } =
+        React.useContext(GlobalContext);
 
     const [sortIndex, setSortIndex] = React.useState(0);
     const [popupOpen, setPopupOpen] = React.useState(false);
@@ -31,18 +24,8 @@ export default function PizzasPage() {
         <div className="content">
             <div className="container">
                 <div className="content__top">
-                    <div className="categories">
-                        <ul>
-                            {categories.map((category, index) => (
-                                <li
-                                    key={index}
-                                    className={curCategory === index ? 'active' : ''}
-                                    onClick={() => setCurCategory(index)}>
-                                    {category}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+                    <Categories />
+
                     <div className="sort">
                         <div className="sort__label">
                             <svg
