@@ -6,22 +6,26 @@ import Skeleton from '../components/PizzaCard/Skeleton';
 import Pagination from '../components/Pagination';
 import Categories from '../components/Categories';
 
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { changeSorting, listOfSorting } from '../redux/slices/sortingSlice';
 
 export default function PizzasPage() {
+    const dispatch = useDispatch();
+
     // context values
-    const { searchValue, listOfSorting, setCurSorting, loading } = React.useContext(GlobalContext);
+    const { loading, pizzas } = React.useContext(GlobalContext);
 
     const [sortIndex, setSortIndex] = React.useState(0);
     const [popupOpen, setPopupOpen] = React.useState(false);
 
+    const searchValue = useSelector((state) => state.search.searchValue);
+    const curSorting = useSelector((state) => state.sorting.curSorting);
+
     const handleSort = (index) => {
         setSortIndex(index);
-        setCurSorting(listOfSorting[index]);
+        dispatch(changeSorting(index));
         setPopupOpen(false);
     };
-
-    const pizzas = useSelector((state) => state.pizza.pizzas);
 
     return (
         <div className="content">
@@ -43,9 +47,7 @@ export default function PizzasPage() {
                                 />
                             </svg>
                             <b>Сортировка по:</b>
-                            <span onClick={() => setPopupOpen(true)}>
-                                {listOfSorting[sortIndex].name}
-                            </span>
+                            <span onClick={() => setPopupOpen(true)}>{curSorting.name}</span>
                         </div>
                         {popupOpen && (
                             <div className="sort__popup">

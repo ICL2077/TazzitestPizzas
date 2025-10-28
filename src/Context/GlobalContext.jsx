@@ -40,31 +40,15 @@ export const GlobalContext = React.createContext();
 export default function GlobalContextProvider({ children }) {
     const dispatch = useDispatch();
 
-    // pagination state
+    // states
     const [curPage, setCurPage] = React.useState(1);
-
-    //loading state
+    const [pizzas, setPizzas] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
 
-    // input state
+    // redux selectors
     const searchValue = useSelector((state) => state.search.searchValue);
-    console.log(searchValue);
-
-    // state of the pizzas
-    const [pizzas, setPizzas] = React.useState([]);
-
-    //arr of categories
-    const categories = ['Все', 'Мясные', 'Вегетерианские', 'Гриль', 'Острые', 'Закрытые'];
-    const [curCategory, setCurCategory] = React.useState(0);
-
-    //sorting logic
-    const listOfSorting = [
-        { name: 'популярности', type: 'rating', order: 'desc' },
-        { name: 'алфавиту', type: 'title', order: 'asc' },
-        { name: 'цене', type: 'price', order: 'asc' },
-    ];
-
-    const [curSorting, setCurSorting] = React.useState(listOfSorting[0]);
+    const curCategory = useSelector((state) => state.filter.curCategory);
+    const curSorting = useSelector((state) => state.sorting.curSorting);
 
     // categories logic
     React.useEffect(() => {
@@ -131,16 +115,7 @@ export default function GlobalContextProvider({ children }) {
                 pizzas,
                 setPizzas,
 
-                categories,
-                curCategory,
-                setCurCategory,
-
-                listOfSorting,
-                curSorting,
-                setCurSorting,
-
                 loading,
-
                 setCurPage,
             }}>
             {children}
