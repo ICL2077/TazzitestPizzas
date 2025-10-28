@@ -1,6 +1,9 @@
 import axios from 'axios';
 import React from 'react';
 
+import { search } from '../redux/slices/searchSlice';
+import { useSelector, useDispatch } from 'react-redux';
+
 // Конфигурация axios с повторными запросами
 const axiosInstance = axios.create({
     timeout: 10000,
@@ -35,6 +38,8 @@ axiosInstance.interceptors.response.use(null, async (error) => {
 export const GlobalContext = React.createContext();
 
 export default function GlobalContextProvider({ children }) {
+    const dispatch = useDispatch();
+
     // pagination state
     const [curPage, setCurPage] = React.useState(1);
 
@@ -42,7 +47,8 @@ export default function GlobalContextProvider({ children }) {
     const [loading, setLoading] = React.useState(true);
 
     // input state
-    const [searchValue, setSearchValue] = React.useState('');
+    const searchValue = useSelector((state) => state.search.searchValue);
+    console.log(searchValue);
 
     // state of the pizzas
     const [pizzas, setPizzas] = React.useState([]);
@@ -63,7 +69,7 @@ export default function GlobalContextProvider({ children }) {
     // categories logic
     React.useEffect(() => {
         setLoading(true);
-        setSearchValue('');
+        dispatch(search(''));
         setCurPage(1);
 
         async function fetchData() {
@@ -122,9 +128,6 @@ export default function GlobalContextProvider({ children }) {
     return (
         <GlobalContext.Provider
             value={{
-                searchValue,
-                setSearchValue,
-
                 pizzas,
                 setPizzas,
 

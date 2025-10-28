@@ -1,11 +1,10 @@
 import React from 'react';
-import { GlobalContext } from '../../Context/GlobalContext.jsx';
-
+import { search } from '../../redux/slices/searchSlice';
+import { useDispatch } from 'react-redux';
 import styles from './SearchInput.module.scss';
 
 export default function SearchInput() {
-    const { setSearchValue } = React.useContext(GlobalContext);
-
+    const dispatch = useDispatch();
     const [searchValueInpt, setSearchValueInpt] = React.useState('');
 
     const handleInputChange = (event) => {
@@ -13,7 +12,7 @@ export default function SearchInput() {
     };
 
     const handleEnterKey = () => {
-        setSearchValue(searchValueInpt);
+        dispatch(search(searchValueInpt));
         setSearchValueInpt('');
     };
 

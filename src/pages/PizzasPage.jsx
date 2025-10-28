@@ -6,10 +6,11 @@ import Skeleton from '../components/PizzaCard/Skeleton';
 import Pagination from '../components/Pagination';
 import Categories from '../components/Categories';
 
+import { useSelector } from 'react-redux';
+
 export default function PizzasPage() {
     // context values
-    const { searchValue, listOfSorting, setCurSorting, pizzas, loading } =
-        React.useContext(GlobalContext);
+    const { searchValue, listOfSorting, setCurSorting, loading } = React.useContext(GlobalContext);
 
     const [sortIndex, setSortIndex] = React.useState(0);
     const [popupOpen, setPopupOpen] = React.useState(false);
@@ -19,6 +20,8 @@ export default function PizzasPage() {
         setCurSorting(listOfSorting[index]);
         setPopupOpen(false);
     };
+
+    const pizzas = useSelector((state) => state.pizza.pizzas);
 
     return (
         <div className="content">

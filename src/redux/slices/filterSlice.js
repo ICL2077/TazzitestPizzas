@@ -15,6 +15,8 @@ export const filterSlice = createSlice({
     },
 });
 
+console.log(filterSlice.actions);
+
 export const { clickOnCat } = filterSlice.actions;
 
 export default filterSlice.reducer;
