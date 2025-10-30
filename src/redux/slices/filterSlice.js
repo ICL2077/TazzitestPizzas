@@ -1,10 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+export const categories = ['Все', 'Мясные', 'Вегетерианские', 'Гриль', 'Острые', 'Закрытые'];
+
 export const filterSlice = createSlice({
     name: 'filter',
 
     initialState: {
-        categories: ['Все', 'Мясные', 'Вегетерианские', 'Гриль', 'Острые', 'Закрытые'],
         curCategory: 0,
     },
 

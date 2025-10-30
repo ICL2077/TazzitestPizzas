@@ -8,12 +8,11 @@ export const searchSlice = createSlice({
     },
 
     reducers: {
-        search: (state, action) => {
+        searchIt: (state, action) => {
             state.searchValue = action.payload;
         },
     },
 });
 
-export const { search } = searchSlice.actions;
-
+export const { searchIt } = searchSlice.actions;
 export default searchSlice.reducer;

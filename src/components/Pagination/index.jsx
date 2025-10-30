@@ -1,11 +1,12 @@
 import React from 'react';
 import ReactPaginate from 'react-paginate';
-import { GlobalContext } from '../../Context/GlobalContext';
+import { changePage } from '../../redux/slices/paginationSlice';
+import { useDispatch } from 'react-redux';
 
 import styles from './Pagination.module.scss';
 
 export default function Pagination() {
-    const { setCurPage } = React.useContext(GlobalContext);
+    const dispatch = useDispatch();
 
     return (
         <>
@@ -13,7 +14,7 @@ export default function Pagination() {
                 className={styles.root}
                 breakLabel="..."
                 nextLabel=">"
-                onPageChange={(event) => setCurPage(event.selected + 1)}
+                onPageChange={(event) => dispatch(changePage(event.selected + 1))}
                 pageRangeDisplayed={4}
                 pageCount={3}
                 previousLabel="<"

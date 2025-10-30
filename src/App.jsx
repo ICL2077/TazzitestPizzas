@@ -9,21 +9,18 @@ import './scss/app.scss';
 import Header from './components/Header';
 import PizzasPage from './pages/PizzasPage';
 import NotFoundPage from './pages/NotFoundPage';
-import GlobalContextProvider from './Context/GlobalContext';
 import CartPage from './pages/CartPage';
 
 export default function App() {
     return (
-        <GlobalContextProvider>
-            <div className="wrapper">
-                <Header />
+        <div className="wrapper">
+            <Header />
 
-                <Routes>
-                    <Route path="/" element={<PizzasPage />} />
-                    <Route path="/cart" element={<CartPage />} />
-                    <Route path="*" element={<NotFoundPage />} />
-                </Routes>
-            </div>
-        </GlobalContextProvider>
+            <Routes>
+                <Route path="/" element={<PizzasPage />} />
+                <Route path="/cart" element={<CartPage />} />
+                <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+        </div>
     );
 }

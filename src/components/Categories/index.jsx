@@ -1,9 +1,8 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { clickOnCat } from '../../redux/slices/filterSlice.js';
+import { clickOnCat, categories } from '../../redux/slices/filterSlice.js';
 
 export default function Categories() {
-    const categories = useSelector((state) => state.filter.categories);
     const curCategory = useSelector((state) => state.filter.curCategory);
     const dispatch = useDispatch();
 
