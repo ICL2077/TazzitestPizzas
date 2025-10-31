@@ -11,14 +11,18 @@ export const sortingSlice = createSlice({
 
     initialState: {
         curSorting: listOfSorting[0],
+        sortIndex: 0,
     },
 
     reducers: {
         changeSorting: (state, action) => {
             state.curSorting = listOfSorting[action.payload];
         },
+        changeSortIndex: (state, action) => {
+            state.sortIndex = action.payload;
+        },
     },
 });
 
-export const { changeSorting } = sortingSlice.actions;
+export const { changeSorting, changeSortIndex } = sortingSlice.actions;
 export default sortingSlice.reducer;

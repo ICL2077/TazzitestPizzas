@@ -1,56 +1,32 @@
 import React from 'react';
+
+// components
 import PizzaCard from '../components/PizzaCard';
 import Skeleton from '../components/PizzaCard/Skeleton';
 import Pagination from '../components/Pagination';
 import Categories from '../components/Categories';
 import Sort from '../components/Sort';
 
+// redux actions
 import { useSelector, useDispatch } from 'react-redux';
 import { pizzaThunk } from '../redux/slices/pizzaThunkSlice';
-import { searchIt } from '../redux/slices/searchSlice';
+import { searchIt, searchItInpt } from '../redux/slices/searchSlice';
 import { changePage } from '../redux/slices/paginationSlice';
 
 export default function PizzasPage() {
     const dispatch = useDispatch();
 
-    const [loading, setLoading] = React.useState(true);
-
+    // redux values
     const curPage = useSelector((state) => state.pagination.curPage);
     const curCategory = useSelector((state) => state.filter.curCategory);
     const curSort = useSelector((state) => state.sorting.curSorting);
-    const searchValue = useSelector((state) => state.search.searchValue);
-    const pizzas = useSelector((state) => state.pizza.pizzas);
+    const { searchValue } = useSelector((state) => state.search);
+    const { pizzas, loading } = useSelector((state) => state.pizza);
 
     React.useEffect(() => {
         async function getData() {
             try {
-                setLoading(true);
-                dispatch(searchIt(''));
-                dispatch(changePage(1));
-
-                const response = await dispatch(
-                    pizzaThunk({ curPage, curCategory, curSort, searchValue }),
-                );
-
-                setLoading(false);
-            } catch (error) {
-                console.log(error);
-            }
-        }
-
-        getData();
-    }, [curCategory]);
-
-    React.useEffect(() => {
-        async function getData() {
-            try {
-                setLoading(true);
-
-                const response = await dispatch(
-                    pizzaThunk({ curPage, curCategory, curSort, searchValue }),
-                );
-
-                setLoading(false);
+                await dispatch(pizzaThunk({ curPage, curCategory, curSort, searchValue }));
             } catch (error) {
                 console.log(error);
             }
@@ -62,25 +38,18 @@ export default function PizzasPage() {
     React.useEffect(() => {
         async function getData() {
             try {
-                setLoading(true);
+                dispatch(searchIt(''));
+                dispatch(searchItInpt(''));
+                dispatch(changePage(1));
 
-                const response = await dispatch(
-                    pizzaThunk({
-                        curPage,
-                        curCategory,
-                        curSort,
-                        searchValue,
-                    }),
-                );
-
-                setLoading(false);
+                await dispatch(pizzaThunk({ curPage, curCategory, curSort, searchValue }));
             } catch (error) {
-                alert.error;
+                console.log(error);
             }
         }
 
         getData();
-    }, []);
+    }, [curCategory]);
 
     return (
         <div className="content">

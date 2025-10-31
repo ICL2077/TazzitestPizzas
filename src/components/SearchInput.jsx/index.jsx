@@ -1,32 +1,52 @@
 import React from 'react';
-import { searchIt } from '../../redux/slices/searchSlice';
-import { useDispatch } from 'react-redux';
+import { searchIt, searchItInpt } from '../../redux/slices/searchSlice';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from './SearchInput.module.scss';
+import debounce from 'lodash.debounce';
 
 export default function SearchInput() {
     const dispatch = useDispatch();
 
-    const [searchValueInpt, setSearchValueInpt] = React.useState('');
+    const inputRef = React.useRef();
+
+    const searchValueInput = useSelector((state) => state.search.searchValueInpt);
+
+    const delayedDispatchRef = React.useRef(
+        debounce((value) => {
+            dispatch(searchIt(value));
+        }, 500),
+    ).current;
 
     const handleInputChange = (event) => {
-        setSearchValueInpt(event.target.value);
+        dispatch(searchItInpt(event.target.value));
+        delayedDispatchRef(event.target.value);
     };
 
-    const handleEnterKey = () => {
-        dispatch(searchIt(searchValueInpt));
-        setSearchValueInpt('');
+    const handleClearKey = () => {
+        dispatch(searchItInpt(''));
+        dispatch(searchIt(''));
+        inputRef.current.focus;
     };
 
     return (
         <div className={styles.root}>
             <input
+                ref={inputRef}
                 className={styles.inpt}
                 type="text"
                 placeholder="Название пиццы..."
-                value={searchValueInpt}
+                value={searchValueInput}
                 onChange={(event) => handleInputChange(event)}
-                onKeyPress={(event) => event.key === 'Enter' && handleEnterKey()}
             />
+            {searchValueInput && (
+                <img
+                    onClick={handleClearKey}
+                    height={32}
+                    width={32}
+                    src="../../../img/remove.svg"
+                    alt="remove"
+                />
+            )}
         </div>
     );
 }

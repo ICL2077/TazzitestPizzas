@@ -1,16 +1,15 @@
 import React from 'react';
-import { changeSorting, listOfSorting } from '../../redux/slices/sortingSlice';
+import { changeSorting, listOfSorting, changeSortIndex } from '../../redux/slices/sortingSlice';
 import { useSelector, useDispatch } from 'react-redux';
 
 export default function Sort() {
-    const [sortIndex, setSortIndex] = React.useState(0);
-    const [popupOpen, setPopupOpen] = React.useState(false);
-
     const dispatch = useDispatch();
-    const curSorting = useSelector((state) => state.sorting.curSorting);
+
+    const [popupOpen, setPopupOpen] = React.useState(false);
+    const { curSorting, sortIndex } = useSelector((state) => state.sorting);
 
     const handleSort = (index) => {
-        setSortIndex(index);
+        dispatch(changeSortIndex(index));
         dispatch(changeSorting(index));
         setPopupOpen(false);
     };
@@ -30,7 +29,7 @@ export default function Sort() {
                     />
                 </svg>
                 <b>Сортировка по:</b>
-                <span onClick={() => setPopupOpen(true)}>{curSorting.name}</span>
+                <span onClick={() => setPopupOpen(!popupOpen)}>{curSorting.name}</span>
             </div>
             {popupOpen && (
                 <div className="sort__popup">

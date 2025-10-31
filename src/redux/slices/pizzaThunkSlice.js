@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-export const pizzaThunk = createAsyncThunk('pizza/fetchData', async (params, thunkApi) => {
+export const pizzaThunk = createAsyncThunk('pizza/fetchData', async (params) => {
     const { curPage, curCategory, curSort, searchValue } = params;
 
     const url = new URL('https://68da669423ebc87faa2fff70.mockapi.io/pizzas');
@@ -21,11 +21,19 @@ export const pizzaSlice = createSlice({
     name: 'pizza',
     initialState: {
         pizzas: [],
+        loading: true,
     },
     reducers: {},
     extraReducers: (builder) => {
+        builder.addCase(pizzaThunk.pending, (state) => {
+            state.loading = true;
+        });
         builder.addCase(pizzaThunk.fulfilled, (state, action) => {
             state.pizzas = action.payload;
+            state.loading = false;
+        });
+        builder.addCase(pizzaThunk.rejected, (state) => {
+            state.loading = false;
         });
     },
 });
