@@ -11,21 +11,22 @@ export default function SearchInput() {
 
     const searchValueInput = useSelector((state) => state.search.searchValueInpt);
 
-    const delayedDispatchRef = React.useRef(
+    const debouncedSearch = React.useCallback(
         debounce((value) => {
             dispatch(searchIt(value));
         }, 500),
-    ).current;
+        [],
+    );
 
     const handleInputChange = (event) => {
         dispatch(searchItInpt(event.target.value));
-        delayedDispatchRef(event.target.value);
+        debouncedSearch(event.target.value);
     };
 
     const handleClearKey = () => {
         dispatch(searchItInpt(''));
         dispatch(searchIt(''));
-        inputRef.current.focus;
+        inputRef.current.focus();
     };
 
     return (
