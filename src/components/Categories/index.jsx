@@ -3,8 +3,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import { clickOnCat, categories } from '../../redux/slices/filterSlice.js';
 
 export default function Categories() {
-    const curCategory = useSelector((state) => state.filter.curCategory);
     const dispatch = useDispatch();
+
+    const curCategory = useSelector((state) => state.filter.curCategory);
+
+    const handleCategoryChange = React.useCallback((index) => {
+        dispatch(clickOnCat(index));
+    }, []);
 
     return (
         <div className="categories">
@@ -13,7 +18,7 @@ export default function Categories() {
                     <li
                         key={index}
                         className={curCategory === index ? 'active' : ''}
-                        onClick={() => dispatch(clickOnCat(index))}>
+                        onClick={() => handleCategoryChange(index)}>
                         {category}
                     </li>
                 ))}

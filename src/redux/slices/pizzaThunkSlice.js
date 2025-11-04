@@ -2,16 +2,16 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 export const pizzaThunk = createAsyncThunk('pizza/fetchData', async (params) => {
-    const { curPage, curCategory, curSort, searchValue } = params;
+    const { curPage, curCategory, curSorting, searchValue } = params;
 
     const url = new URL('https://68da669423ebc87faa2fff70.mockapi.io/pizzas');
 
     url.searchParams.append('page', curPage);
     url.searchParams.append('limit', 4);
     curCategory && url.searchParams.append('category', curCategory);
-    url.searchParams.append('sortBy', curSort.type);
+    url.searchParams.append('sortBy', curSorting.type);
     searchValue && url.searchParams.append('title', searchValue);
-    url.searchParams.append('order', curSort.order);
+    url.searchParams.append('order', curSorting.order);
 
     const { data } = await axios.get(url.toString());
     return data;

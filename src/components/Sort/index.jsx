@@ -8,11 +8,11 @@ export default function Sort() {
     const [popupOpen, setPopupOpen] = React.useState(false);
     const { curSorting, sortIndex } = useSelector((state) => state.sorting);
 
-    const handleSort = (index) => {
+    const handleSort = React.useCallback((index) => {
         dispatch(changeSortIndex(index));
         dispatch(changeSorting(index));
         setPopupOpen(false);
-    };
+    }, []);
 
     return (
         <div className="sort">

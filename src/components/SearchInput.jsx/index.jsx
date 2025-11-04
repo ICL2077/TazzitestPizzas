@@ -18,16 +18,16 @@ export default function SearchInput() {
         [],
     );
 
-    const handleInputChange = (event) => {
+    const handleInputChange = React.useCallback((event) => {
         dispatch(searchItInpt(event.target.value));
         debouncedSearch(event.target.value);
-    };
+    }, []);
 
-    const handleClearKey = () => {
+    const handleClearKey = React.useCallback(() => {
         dispatch(searchItInpt(''));
         dispatch(searchIt(''));
         inputRef.current.focus();
-    };
+    }, []);
 
     return (
         <div className={styles.root}>
