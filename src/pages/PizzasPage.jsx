@@ -22,6 +22,7 @@ export default function PizzasPage() {
     const navigate = useNavigate();
 
     const isSearchRef = React.useRef(true);
+    const blockFirstRender = React.useRef(true);
 
     // fetch data func
     async function getData(obj) {
@@ -65,6 +66,8 @@ export default function PizzasPage() {
                 curSorting: listOfSorting[params.sortIndex], // берем объект сортировки исходя из переданного индекса сортировки (в curSorting возвращается строка type)
                 searchValue: params.searchValue,
             });
+        } else {
+            getData({ curPage, curCategory, curSorting, searchValue });
         }
     }, []);
 
@@ -75,16 +78,20 @@ export default function PizzasPage() {
     }, [curPage, curSorting, searchValue, curCategory]);
 
     React.useEffect(() => {
-        // формируем строку которую вшьём в url браузера исходя из объекта
-        const queryString = qs.stringify({
-            curCategory,
-            curSorting: curSorting.type,
-            sortIndex,
-            curPage,
-            searchValue,
-        });
+        if (!blockFirstRender.current) {
+            // формируем строку которую вшьём в url браузера исходя из объекта
+            const queryString = qs.stringify({
+                curCategory,
+                curSorting: curSorting.type,
+                sortIndex,
+                curPage,
+                searchValue,
+            });
 
-        navigate(`?${queryString}`);
+            navigate(`?${queryString}`);
+        }
+
+        blockFirstRender.current = false;
     }, [curCategory, curSorting, curPage, searchValue, sortIndex]);
 
     return (
