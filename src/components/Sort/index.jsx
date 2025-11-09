@@ -5,8 +5,24 @@ import { useSelector, useDispatch } from 'react-redux';
 export default function Sort() {
     const dispatch = useDispatch();
 
+    const searchRef = React.useRef();
+
     const [popupOpen, setPopupOpen] = React.useState(false);
     const { curSorting, sortIndex } = useSelector((state) => state.sorting);
+
+    React.useEffect(() => {
+        const handleClickOut = (event) => {
+            event.composedPath().includes(searchRef.current)
+                ? setPopupOpen(true)
+                : setPopupOpen(false);
+        };
+
+        document.body.addEventListener('click', handleClickOut);
+
+        return () => {
+            document.body.removeEventListener('click', handleClickOut);
+        };
+    }, []);
 
     const handleSort = React.useCallback((index) => {
         dispatch(changeSortIndex(index));
@@ -15,7 +31,7 @@ export default function Sort() {
     }, []);
 
     return (
-        <div className="sort">
+        <div ref={searchRef} className="sort">
             <div className="sort__label">
                 <svg
                     width="10"
@@ -29,7 +45,7 @@ export default function Sort() {
                     />
                 </svg>
                 <b>Сортировка по:</b>
-                <span onClick={() => setPopupOpen(!popupOpen)}>{curSorting.name}</span>
+                <span>{curSorting.name}</span>
             </div>
             {popupOpen && (
                 <div className="sort__popup">

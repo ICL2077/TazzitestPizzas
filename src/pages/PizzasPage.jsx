@@ -16,6 +16,7 @@ import { searchIt, searchItInpt } from '../redux/slices/searchSlice';
 import { changePage } from '../redux/slices/paginationSlice';
 import { changeSortIndex, changeSorting, listOfSorting } from '../redux/slices/sortingSlice';
 import { clickOnCat } from '../redux/slices/filterSlice';
+import { cartThunk } from '../redux/slices/cartThunkSlice';
 
 export default function PizzasPage() {
     const dispatch = useDispatch();
@@ -25,17 +26,17 @@ export default function PizzasPage() {
     const blockFirstRender = React.useRef(true);
 
     // fetch data func
-    async function getData(obj) {
+    const getData = React.useCallback(async (obj) => {
         try {
             await dispatch(pizzaThunk(obj));
             isSearchRef.current = false; // разблокировка useEffect
         } catch (error) {
             console.log(error);
         }
-    }
+    }, []);
 
     // redux values
-    const { curPage, curCategory, curSorting, sortIndex, searchValue, pizzas, loading } =
+    const { curPage, curCategory, curSorting, sortIndex, searchValue, pizzas, loading, cart } =
         useSelector((state) => ({
             curPage: state.pagination.curPage,
             curCategory: state.filter.curCategory,
@@ -44,10 +45,13 @@ export default function PizzasPage() {
             searchValue: state.search.searchValue,
             pizzas: state.pizza.pizzas,
             loading: state.pizza.loading,
+            cart: state.cart.cart,
         }));
 
     // хук для сохранения изменений на сайте после перезагрузки
     React.useEffect(() => {
+        dispatch(cartThunk());
+
         if (window.location.search) {
             const params = qs.parse(window.location.search.substring(1));
 
@@ -77,7 +81,9 @@ export default function PizzasPage() {
         !isSearchRef.current && getData({ curPage, curCategory, curSorting, searchValue });
     }, [curPage, curSorting, searchValue, curCategory]);
 
+    // парсим объект в строку и вшываем её в url
     React.useEffect(() => {
+        // при первом рендере не даем вшить спарсенную строку в url
         if (!blockFirstRender.current) {
             // формируем строку которую вшьём в url браузера исходя из объекта
             const queryString = qs.stringify({

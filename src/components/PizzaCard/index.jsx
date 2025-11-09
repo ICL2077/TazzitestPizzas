@@ -1,9 +1,65 @@
+import axios from 'axios';
 import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { cartThunk } from '../../redux/slices/cartThunkSlice';
 
 export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) {
+    const dispatch = useDispatch();
+
+    const cart = useSelector((state) => state.cart.cart);
     const arrOfTypes = ['традиционный', 'без корочки'];
     const [typeOfPizza, setTypeOfPizza] = React.useState(0);
-    const [curSize, setCurSize] = React.useState(0);
+    const [curSizeIndex, setCurSizeIndex] = React.useState(0);
+
+    const sizeRef = React.useRef(0);
+    const typeRef = React.useRef(0);
+
+    const handleChangeSize = (index) => {
+        sizeRef.current = index;
+        setCurSizeIndex(index);
+    };
+
+    const handleChangeType = (index) => {
+        typeRef.current = index;
+        setTypeOfPizza(index);
+    };
+
+    const handleAddingToCart = React.useCallback(async () => {
+        try {
+            const pizzaObj = {
+                id: id,
+                imageUrl: imageUrl,
+                title: title,
+                price: price,
+                size: sizes[sizeRef.current],
+                type: arrOfTypes[typeRef.current],
+                amount: 1,
+            };
+
+            const existingObj = cart.find(
+                (obj) =>
+                    obj.title === pizzaObj.title &&
+                    obj.size === pizzaObj.size &&
+                    obj.type === pizzaObj.type,
+            );
+
+            if (existingObj) {
+                const newAmount = existingObj.amount + 1;
+
+                await axios.patch(
+                    `https://68da669423ebc87faa2fff70.mockapi.io/cart/${existingObj.id}`,
+                    { amount: newAmount },
+                );
+
+                await dispatch(cartThunk());
+            } else {
+                await axios.post(`https://68da669423ebc87faa2fff70.mockapi.io/cart`, pizzaObj);
+                await dispatch(cartThunk());
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }, []);
 
     return (
         <div className="pizza-block">
@@ -15,7 +71,7 @@ export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) 
                         <li
                             key={type}
                             className={typeOfPizza === index ? 'active' : ''}
-                            onClick={() => setTypeOfPizza(index)}>
+                            onClick={() => handleChangeType(index)}>
                             {arrOfTypes[type]}
                         </li>
                     ))}
@@ -24,8 +80,8 @@ export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) 
                     {sizes.map((size, index) => (
                         <li
                             key={size}
-                            className={curSize === index ? 'active' : ''}
-                            onClick={() => setCurSize(index)}>
+                            className={curSizeIndex === index ? 'active' : ''}
+                            onClick={() => handleChangeSize(index)}>
                             {size} см.
                         </li>
                     ))}
@@ -33,7 +89,7 @@ export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) 
             </div>
             <div className="pizza-block__bottom">
                 <div className="pizza-block__price">от {price} ₽</div>
-                <div className="button button--outline button--add">
+                <div onClick={handleAddingToCart} className="button button--outline button--add">
                     <svg
                         width="12"
                         height="12"
@@ -46,7 +102,6 @@ export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) 
                         />
                     </svg>
                     <span>Добавить</span>
-                    <i>2</i>
                 </div>
             </div>
         </div>

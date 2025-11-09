@@ -1,10 +1,27 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import SearchInput from '../SearchInput.jsx';
-
+import { useSelector, useDispatch } from 'react-redux';
 import styles from './Header.module.scss';
+import { addToTotalPrice, setTotalPriceToZero } from '../../redux/slices/cartThunkSlice.js';
 
 export default function Header() {
+    const dispatch = useDispatch();
+
+    const { cart, totalPrice } = useSelector((state) => ({
+        cart: state.cart.cart,
+        totalPrice: state.cart.totalPrice,
+    }));
+
+    React.useEffect(() => {
+        dispatch(setTotalPriceToZero());
+
+        cart.map((item) => {
+            const calcPrice = item.price * item.amount;
+            dispatch(addToTotalPrice(calcPrice));
+        });
+    }, [cart.length]);
+
     return (
         <div className="header">
             <div className="container">
@@ -22,7 +39,7 @@ export default function Header() {
 
                 <div className="header__cart">
                     <Link to="/cart" className="button button--cart">
-                        <span>520 ₽</span>
+                        <span>{totalPrice} ₽</span>
                         <div className="button__delimiter"></div>
                         <svg
                             width="17"
@@ -52,7 +69,7 @@ export default function Header() {
                                 strokeLinejoin="round"
                             />
                         </svg>
-                        <span>3</span>
+                        <span>{cart.length}</span>
                     </Link>
                 </div>
             </div>
