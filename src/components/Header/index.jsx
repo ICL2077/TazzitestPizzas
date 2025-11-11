@@ -20,7 +20,7 @@ export default function Header() {
             const calcPrice = item.price * item.amount;
             dispatch(addToTotalPrice(calcPrice));
         });
-    }, [cart.length]);
+    }, [cart]);
 
     return (
         <div className="header">

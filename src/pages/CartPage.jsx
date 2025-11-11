@@ -26,14 +26,15 @@ export default function CartPage() {
         getData();
     }, []);
 
+    // useEffect вычисления полной суммы всех товаров в корзине
     React.useEffect(() => {
-        dispatch(setTotalPriceToZero());
+        dispatch(setTotalPriceToZero()); // обнуляем число перед вычислением для вывода корректной суммы при удалении товара
 
         cart.map((item) => {
             const calcPrice = item.price * item.amount;
             dispatch(addToTotalPrice(calcPrice));
         });
-    }, [cart.length]);
+    }, [cart]);
 
     return (
         <div className="container container--cart">

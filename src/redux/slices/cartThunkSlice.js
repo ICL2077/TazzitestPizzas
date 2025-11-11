@@ -22,9 +22,6 @@ const cartSlice = createSlice({
         addToTotalPrice: (state, action) => {
             state.totalPrice += action.payload;
         },
-        removeFromTotalPrice: (state, action) => {
-            state.totalPrice -= action.payload;
-        },
     },
     extraReducers: (builder) => {
         builder.addCase(cartThunk.pending, (state) => {

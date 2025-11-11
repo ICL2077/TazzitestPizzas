@@ -6,13 +6,23 @@ import { cartThunk } from '../../redux/slices/cartThunkSlice';
 export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) {
     const dispatch = useDispatch();
 
-    const cart = useSelector((state) => state.cart.cart);
     const arrOfTypes = ['традиционный', 'без корочки'];
     const [typeOfPizza, setTypeOfPizza] = React.useState(0);
     const [curSizeIndex, setCurSizeIndex] = React.useState(0);
 
     const sizeRef = React.useRef(0);
     const typeRef = React.useRef(0);
+
+    const cartItem = useSelector((state) =>
+        state.cart.cart.find(
+            (obj) =>
+                obj.title === title &&
+                obj.type === arrOfTypes[typeOfPizza] &&
+                obj.size === sizes[curSizeIndex],
+        ),
+    );
+
+    const amount = cartItem ? cartItem.amount : 0;
 
     const handleChangeSize = (index) => {
         sizeRef.current = index;
@@ -31,23 +41,16 @@ export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) 
                 imageUrl: imageUrl,
                 title: title,
                 price: price,
-                size: sizes[sizeRef.current],
-                type: arrOfTypes[typeRef.current],
+                size: sizes[curSizeIndex],
+                type: arrOfTypes[typeOfPizza],
                 amount: 1,
             };
 
-            const existingObj = cart.find(
-                (obj) =>
-                    obj.title === pizzaObj.title &&
-                    obj.size === pizzaObj.size &&
-                    obj.type === pizzaObj.type,
-            );
-
-            if (existingObj) {
-                const newAmount = existingObj.amount + 1;
+            if (cartItem) {
+                const newAmount = cartItem.amount + 1;
 
                 await axios.patch(
-                    `https://68da669423ebc87faa2fff70.mockapi.io/cart/${existingObj.id}`,
+                    `https://68da669423ebc87faa2fff70.mockapi.io/cart/${cartItem.id}`,
                     { amount: newAmount },
                 );
 
@@ -59,7 +62,7 @@ export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) 
         } catch (error) {
             console.log(error);
         }
-    }, []);
+    }, [curSizeIndex, arrOfTypes]);
 
     return (
         <div className="pizza-block">
@@ -101,7 +104,7 @@ export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) 
                             fill="white"
                         />
                     </svg>
-                    <span>Добавить</span>
+                    <span>Добавить {amount > 0 && amount}</span>
                 </div>
             </div>
         </div>

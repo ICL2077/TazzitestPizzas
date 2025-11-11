@@ -1,14 +1,12 @@
 import axios from 'axios';
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { addToTotalPrice, removeFromTotalPrice } from '../../redux/slices/cartThunkSlice';
 
 export default function CartItem({ id, imageUrl, title, type, size, price, amount, cartThunk }) {
     const dispatch = useDispatch();
 
     const handleDelete = React.useCallback(async () => {
         try {
-            dispatch(removeFromTotalPrice(price));
             await axios.delete(`https://68da669423ebc87faa2fff70.mockapi.io/cart/${id}`);
             await dispatch(cartThunk());
         } catch (error) {
