@@ -4,6 +4,7 @@ import CartItem from '../components/CartItem';
 import { useSelector, useDispatch } from 'react-redux';
 import { addToTotalPrice, cartThunk, setTotalPriceToZero } from '../redux/slices/cartThunkSlice';
 import CartSkeleton from '../components/CartItem/CartSkeleton';
+import axios from 'axios';
 
 export default function CartPage() {
     const dispatch = useDispatch();
@@ -26,6 +27,15 @@ export default function CartPage() {
         getData();
     }, []);
 
+    const handleZeroAmount = async (id) => {
+        try {
+            await axios.delete(`https://68da669423ebc87faa2fff70.mockapi.io/cart/${id}`);
+            await dispatch(cartThunk());
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     // useEffect вычисления полной суммы всех товаров в корзине
     React.useEffect(() => {
         dispatch(setTotalPriceToZero()); // обнуляем число перед вычислением для вывода корректной суммы при удалении товара
@@ -33,6 +43,10 @@ export default function CartPage() {
         cart.map((item) => {
             const calcPrice = item.price * item.amount;
             dispatch(addToTotalPrice(calcPrice));
+
+            if (item.amount === 0) {
+                handleZeroAmount(item.id);
+            }
         });
     }, [cart]);
 
@@ -115,12 +129,9 @@ export default function CartPage() {
                     {loading ? (
                         [...new Array(3)].map((_, index) => <CartSkeleton key={index} />)
                     ) : cart.length > 0 ? (
-                        cart.map(
-                            (item) =>
-                                item.amount > 0 && (
-                                    <CartItem key={item.id} {...item} cartThunk={cartThunk} />
-                                ),
-                        )
+                        cart.map((item) => (
+                            <CartItem key={item.id} {...item} cartThunk={cartThunk} />
+                        ))
                     ) : (
                         <h2>Корзина пуста</h2>
                     )}

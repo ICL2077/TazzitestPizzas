@@ -14,6 +14,30 @@ export default function CartItem({ id, imageUrl, title, type, size, price, amoun
         }
     }, []);
 
+    const handleDecreaseAmount = React.useCallback(async () => {
+        try {
+            await axios.patch(`https://68da669423ebc87faa2fff70.mockapi.io/cart/${id}`, {
+                amount: amount - 1,
+            });
+
+            await dispatch(cartThunk());
+        } catch (error) {
+            console.log(error);
+        }
+    }, []);
+
+    const handleIncreaseAmount = React.useCallback(async () => {
+        try {
+            await axios.patch(`https://68da669423ebc87faa2fff70.mockapi.io/cart/${id}`, {
+                amount: amount + 1,
+            });
+
+            await dispatch(cartThunk());
+        } catch (error) {
+            console.log(error);
+        }
+    });
+
     return (
         <div key={id} className="cart__item">
             <div className="cart__item-img">
@@ -26,7 +50,9 @@ export default function CartItem({ id, imageUrl, title, type, size, price, amoun
                 </p>
             </div>
             <div className="cart__item-count">
-                <div className="button button--outline button--circle cart__item-count-minus">
+                <div
+                    onClick={handleDecreaseAmount}
+                    className="button button--outline button--circle cart__item-count-minus">
                     <svg
                         width="10"
                         height="10"
@@ -44,7 +70,9 @@ export default function CartItem({ id, imageUrl, title, type, size, price, amoun
                     </svg>
                 </div>
                 <b>{amount}</b>
-                <div className="button button--outline button--circle cart__item-count-plus">
+                <div
+                    onClick={handleIncreaseAmount}
+                    className="button button--outline button--circle cart__item-count-plus">
                     <svg
                         width="10"
                         height="10"
@@ -63,7 +91,7 @@ export default function CartItem({ id, imageUrl, title, type, size, price, amoun
                 </div>
             </div>
             <div className="cart__item-price">
-                <b>{price} ₽</b>
+                <b>{price * amount} ₽</b>
             </div>
             <div onClick={handleDelete} className="cart__item-remove">
                 <div className="button button--outline button--circle">

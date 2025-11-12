@@ -10,27 +10,22 @@ export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) 
     const [typeOfPizza, setTypeOfPizza] = React.useState(0);
     const [curSizeIndex, setCurSizeIndex] = React.useState(0);
 
-    const sizeRef = React.useRef(0);
-    const typeRef = React.useRef(0);
-
     const cartItem = useSelector((state) =>
         state.cart.cart.find(
             (obj) =>
                 obj.title === title &&
-                obj.type === arrOfTypes[typeOfPizza] &&
-                obj.size === sizes[curSizeIndex],
+                obj.size === sizes[curSizeIndex] &&
+                obj.type === arrOfTypes[typeOfPizza],
         ),
     );
 
     const amount = cartItem ? cartItem.amount : 0;
 
     const handleChangeSize = (index) => {
-        sizeRef.current = index;
         setCurSizeIndex(index);
     };
 
     const handleChangeType = (index) => {
-        typeRef.current = index;
         setTypeOfPizza(index);
     };
 
@@ -62,7 +57,7 @@ export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) 
         } catch (error) {
             console.log(error);
         }
-    }, [curSizeIndex, arrOfTypes]);
+    }, [curSizeIndex, typeOfPizza]);
 
     return (
         <div className="pizza-block">
