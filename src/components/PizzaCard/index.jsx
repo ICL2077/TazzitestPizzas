@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { cartThunk } from '../../redux/slices/cartThunkSlice';
+import { cartThunk } from '../../redux/asyncThunks/cartThunk';
 
 export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) {
     const dispatch = useDispatch();
@@ -44,20 +44,17 @@ export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) 
             if (cartItem) {
                 const newAmount = cartItem.amount + 1;
 
-                await axios.patch(
-                    `https://68da669423ebc87faa2fff70.mockapi.io/cart/${cartItem.id}`,
-                    { amount: newAmount },
-                );
+                await axios.patch(`/api/cart/${cartItem.id}`, { amount: newAmount });
 
                 await dispatch(cartThunk());
             } else {
-                await axios.post(`https://68da669423ebc87faa2fff70.mockapi.io/cart`, pizzaObj);
+                await axios.post(`/api/cart`, pizzaObj);
                 await dispatch(cartThunk());
             }
         } catch (error) {
             console.log(error);
         }
-    }, [curSizeIndex, typeOfPizza]);
+    }, [curSizeIndex, typeOfPizza, cartItem]);
 
     return (
         <div className="pizza-block">

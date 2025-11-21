@@ -3,23 +3,19 @@ import { Link } from 'react-router-dom';
 import SearchInput from '../SearchInput.jsx';
 import { useSelector, useDispatch } from 'react-redux';
 import styles from './Header.module.scss';
-import { addToTotalPrice, setTotalPriceToZero } from '../../redux/slices/cartThunkSlice.js';
+import { calcPriceAndItems } from '../../redux/slices/cartSlice.js';
 
 export default function Header() {
     const dispatch = useDispatch();
 
-    const { cart, totalPrice } = useSelector((state) => ({
+    const { cart, totalPrice, totalItems } = useSelector((state) => ({
         cart: state.cart.cart,
         totalPrice: state.cart.totalPrice,
+        totalItems: state.cart.totalItems,
     }));
 
     React.useEffect(() => {
-        dispatch(setTotalPriceToZero());
-
-        cart.map((item) => {
-            const calcPrice = item.price * item.amount;
-            dispatch(addToTotalPrice(calcPrice));
-        });
+        dispatch(calcPriceAndItems());
     }, [cart]);
 
     return (
@@ -39,8 +35,6 @@ export default function Header() {
 
                 <div className="header__cart">
                     <Link to="/cart" className="button button--cart">
-                        <span>{totalPrice} ₽</span>
-                        <div className="button__delimiter"></div>
                         <svg
                             width="17"
                             height="17"
@@ -69,7 +63,13 @@ export default function Header() {
                                 strokeLinejoin="round"
                             />
                         </svg>
-                        <span>{cart.length}</span>
+                        {cart.length > 0 && (
+                            <>
+                                <span>{totalPrice} ₽</span>
+                                <div className="button__delimiter"></div>
+                            </>
+                        )}
+                        <span>{totalItems}</span>
                     </Link>
                 </div>
             </div>

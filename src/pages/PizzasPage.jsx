@@ -1,6 +1,5 @@
 import React from 'react';
 import qs from 'qs';
-import { useNavigate } from 'react-router-dom';
 
 // components
 import PizzaCard from '../components/PizzaCard';
@@ -9,14 +8,18 @@ import Pagination from '../components/Pagination';
 import Categories from '../components/Categories';
 import Sort from '../components/Sort';
 
-// redux actions
+// hooks
 import { useSelector, useDispatch } from 'react-redux';
-import { pizzaThunk } from '../redux/slices/pizzaThunkSlice';
+import { useNavigate } from 'react-router-dom';
+
+// redux actions
+import { pizzaThunk } from '../redux/asyncThunks/pizzaThunk';
+import { cartThunk } from '../redux/asyncThunks/cartThunk';
+
 import { searchIt, searchItInpt } from '../redux/slices/searchSlice';
 import { changePage } from '../redux/slices/paginationSlice';
 import { changeSortIndex, changeSorting, listOfSorting } from '../redux/slices/sortingSlice';
 import { clickOnCat } from '../redux/slices/filterSlice';
-import { cartThunk } from '../redux/slices/cartThunkSlice';
 
 export default function PizzasPage() {
     const dispatch = useDispatch();
@@ -36,7 +39,7 @@ export default function PizzasPage() {
     }, []);
 
     // redux values
-    const { curPage, curCategory, curSorting, sortIndex, searchValue, pizzas, loading, cart } =
+    const { curPage, curCategory, curSorting, sortIndex, searchValue, pizzas, loading } =
         useSelector((state) => ({
             curPage: state.pagination.curPage,
             curCategory: state.filter.curCategory,
@@ -45,7 +48,6 @@ export default function PizzasPage() {
             searchValue: state.search.searchValue,
             pizzas: state.pizza.pizzas,
             loading: state.pizza.loading,
-            cart: state.cart.cart,
         }));
 
     // хук для сохранения изменений на сайте после перезагрузки
@@ -73,6 +75,10 @@ export default function PizzasPage() {
         } else {
             getData({ curPage, curCategory, curSorting, searchValue });
         }
+
+        return () => {
+            isSearchRef.current = true;
+        };
     }, []);
 
     // useEffect для изменения ui и запроса на бэк

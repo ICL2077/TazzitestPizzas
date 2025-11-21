@@ -1,13 +1,14 @@
 import axios from 'axios';
 import React from 'react';
+import { cartThunk } from '../../redux/asyncThunks/cartThunk';
 import { useDispatch } from 'react-redux';
 
-export default function CartItem({ id, imageUrl, title, type, size, price, amount, cartThunk }) {
+export default function CartItem({ id, imageUrl, title, type, size, price, amount }) {
     const dispatch = useDispatch();
 
     const handleDelete = React.useCallback(async () => {
         try {
-            await axios.delete(`https://68da669423ebc87faa2fff70.mockapi.io/cart/${id}`);
+            await axios.delete(`/api/cart/${id}`);
             await dispatch(cartThunk());
         } catch (error) {
             console.log(error);
@@ -16,9 +17,13 @@ export default function CartItem({ id, imageUrl, title, type, size, price, amoun
 
     const handleDecreaseAmount = React.useCallback(async () => {
         try {
-            await axios.patch(`https://68da669423ebc87faa2fff70.mockapi.io/cart/${id}`, {
-                amount: amount - 1,
-            });
+            if (amount === 1) {
+                await axios.delete(`/api/cart/${id}`);
+            } else {
+                await axios.patch(`/api/cart/${id}`, {
+                    amount: amount - 1,
+                });
+            }
 
             await dispatch(cartThunk());
         } catch (error) {
@@ -28,7 +33,7 @@ export default function CartItem({ id, imageUrl, title, type, size, price, amoun
 
     const handleIncreaseAmount = React.useCallback(async () => {
         try {
-            await axios.patch(`https://68da669423ebc87faa2fff70.mockapi.io/cart/${id}`, {
+            await axios.patch(`/api/cart/${id}`, {
                 amount: amount + 1,
             });
 

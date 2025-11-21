@@ -1,12 +1,5 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-
-const url = new URL('https://68da669423ebc87faa2fff70.mockapi.io/cart');
-
-export const cartThunk = createAsyncThunk('cart/fetchData', async (params) => {
-    const { data } = await axios.get(url.toString());
-    return data;
-});
+import { createSlice } from '@reduxjs/toolkit';
+import { cartThunk } from '../asyncThunks/cartThunk';
 
 const cartSlice = createSlice({
     name: 'cart',
@@ -14,13 +7,22 @@ const cartSlice = createSlice({
         cart: [],
         loading: true,
         totalPrice: 0,
+        totalItems: 0,
     },
     reducers: {
-        setTotalPriceToZero: (state) => {
-            state.totalPrice = 0;
+        calcPriceAndItems: (state) => {
+            state.totalPrice = state.cart.reduce(
+                (globalPrice, curItem) => globalPrice + curItem.price * curItem.amount,
+                0,
+            );
+
+            state.totalItems = state.cart.reduce(
+                (allItems, curItem) => allItems + curItem.amount,
+                0,
+            );
         },
-        addToTotalPrice: (state, action) => {
-            state.totalPrice += action.payload;
+        clearCart: (state) => {
+            state.cart = [];
         },
     },
     extraReducers: (builder) => {
@@ -37,5 +39,5 @@ const cartSlice = createSlice({
     },
 });
 
-export const { addToTotalPrice, removeFromTotalPrice, setTotalPriceToZero } = cartSlice.actions;
+export const { calcPriceAndItems, clearCart } = cartSlice.actions;
 export default cartSlice.reducer;
