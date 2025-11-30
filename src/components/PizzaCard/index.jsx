@@ -2,6 +2,8 @@ import axios from 'axios';
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { cartThunk } from '../../redux/asyncThunks/cartThunk';
+import { selectCartItem } from '../../redux/slices/cartSlice';
+import { Link } from 'react-router-dom';
 
 export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) {
     const dispatch = useDispatch();
@@ -10,13 +12,8 @@ export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) 
     const [typeOfPizza, setTypeOfPizza] = React.useState(0);
     const [curSizeIndex, setCurSizeIndex] = React.useState(0);
 
-    const cartItem = useSelector((state) =>
-        state.cart.cart.find(
-            (obj) =>
-                obj.title === title &&
-                obj.size === sizes[curSizeIndex] &&
-                obj.type === arrOfTypes[typeOfPizza],
-        ),
+    const cartItem = useSelector(
+        selectCartItem(title, sizes[curSizeIndex], arrOfTypes[typeOfPizza]),
     );
 
     const amount = cartItem ? cartItem.amount : 0;
@@ -58,7 +55,9 @@ export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) 
 
     return (
         <div className="pizza-block">
-            <img className="pizza-block__image" src={imageUrl} alt="Pizza" />
+            <Link to={`/pizza/${id}`}>
+                <img className="pizza-block__image" src={imageUrl} alt="Pizza" />
+            </Link>
             <h4 className="pizza-block__title">{title}</h4>
             <div className="pizza-block__selector">
                 <ul>

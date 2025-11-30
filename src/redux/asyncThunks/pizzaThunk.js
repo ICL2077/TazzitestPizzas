@@ -1,9 +1,21 @@
+// libs
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import qs from 'qs';
+import { changePage } from '../slices/paginationSlice';
+import { clickOnCat } from '../slices/filterSlice';
+import { changeSortIndex, changeSorting } from '../slices/sortingSlice';
+import { searchIt, searchItInpt } from '../slices/searchSlice';
 
-export const pizzaThunk = createAsyncThunk('pizza/fetchData', async (params) => {
-    const { curPage, curCategory, curSorting, searchValue } = params;
+export const pizzaThunk = createAsyncThunk('pizza/fetchData', async (params, thunkApi) => {
+    const { curPage, curCategory, curSorting, sortIndex, searchValue } = params;
+
+    thunkApi.dispatch(changePage(curPage));
+    thunkApi.dispatch(clickOnCat(curCategory));
+    thunkApi.dispatch(changeSorting(sortIndex));
+    thunkApi.dispatch(changeSortIndex(sortIndex));
+    thunkApi.dispatch(searchIt(searchValue));
+    thunkApi.dispatch(searchItInpt(searchValue));
 
     const paramsQuery = qs.stringify({
         page: curPage,

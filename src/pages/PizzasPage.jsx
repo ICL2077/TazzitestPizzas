@@ -16,10 +16,8 @@ import { useNavigate } from 'react-router-dom';
 import { pizzaThunk } from '../redux/asyncThunks/pizzaThunk';
 import { cartThunk } from '../redux/asyncThunks/cartThunk';
 
-import { searchIt, searchItInpt } from '../redux/slices/searchSlice';
-import { changePage } from '../redux/slices/paginationSlice';
-import { changeSortIndex, changeSorting, listOfSorting } from '../redux/slices/sortingSlice';
-import { clickOnCat } from '../redux/slices/filterSlice';
+import { listOfSorting, selectSortingData } from '../redux/slices/sortingSlice';
+import { selectPizzaData } from '../redux/slices/pizzaSlice';
 
 export default function PizzasPage() {
     const dispatch = useDispatch();
@@ -39,41 +37,34 @@ export default function PizzasPage() {
     }, []);
 
     // redux values
-    const { curPage, curCategory, curSorting, sortIndex, searchValue, pizzas, loading } =
-        useSelector((state) => ({
-            curPage: state.pagination.curPage,
-            curCategory: state.filter.curCategory,
-            curSorting: state.sorting.curSorting,
-            sortIndex: state.sorting.sortIndex,
-            searchValue: state.search.searchValue,
-            pizzas: state.pizza.pizzas,
-            loading: state.pizza.loading,
-        }));
+    const { curPage, curCategory, searchValue } = useSelector((state) => ({
+        curPage: state.pagination.curPage,
+        curCategory: state.filter.curCategory,
+        curSorting: state.sorting.curSorting,
+        searchValue: state.search.searchValue,
+    }));
+
+    //selectors
+    const { pizzas, loading } = useSelector(selectPizzaData);
+    const { curSorting, sortIndex } = useSelector(selectSortingData);
 
     // хук для сохранения изменений на сайте после перезагрузки
     React.useEffect(() => {
-        dispatch(cartThunk());
+        dispatch(cartThunk()); // получаем данные корзины
 
         if (window.location.search) {
             const params = qs.parse(window.location.search.substring(1));
-
-            // меняем значения в redux для изменениях в UI
-            dispatch(changePage(Number(params.curPage)));
-            dispatch(clickOnCat(Number(params.curCategory)));
-            dispatch(changeSorting(Number(params.sortIndex)));
-            dispatch(changeSortIndex(Number(params.sortIndex)));
-            dispatch(searchIt(params.searchValue));
-            dispatch(searchItInpt(params.searchValue));
 
             // формируем get-запрос на backEnd исходя из спарсенных данных в url
             getData({
                 curPage: Number(params.curPage),
                 curCategory: Number(params.curCategory), // используем Number так как спарсенные значения являются строками
                 curSorting: listOfSorting[params.sortIndex], // берем объект сортировки исходя из переданного индекса сортировки (в curSorting возвращается строка type)
+                sortIndex: Number(params.sortIndex),
                 searchValue: params.searchValue,
             });
         } else {
-            getData({ curPage, curCategory, curSorting, searchValue });
+            getData({ curPage, curCategory, curSorting, sortIndex, searchValue });
         }
 
         return () => {
@@ -84,7 +75,8 @@ export default function PizzasPage() {
     // useEffect для изменения ui и запроса на бэк
     React.useEffect(() => {
         // блокирую первый запрос этого useEffect чтобы не происходило 2 идентичных запроса
-        !isSearchRef.current && getData({ curPage, curCategory, curSorting, searchValue });
+        !isSearchRef.current &&
+            getData({ curPage, curCategory, curSorting, sortIndex, searchValue });
     }, [curPage, curSorting, searchValue, curCategory]);
 
     // парсим объект в строку и вшываем её в url
@@ -120,7 +112,10 @@ export default function PizzasPage() {
                     ) : pizzas.length > 0 ? (
                         pizzas.map((pizza) => <PizzaCard key={pizza.id} {...pizza} />)
                     ) : (
-                        <h1>Пицц нет</h1>
+                        <div className="error">
+                            <h1>Произошла ошибка!</h1>
+                            <p>у нас не получилось получить пиццы</p>
+                        </div>
                     )}
                 </div>
             </div>

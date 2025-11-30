@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import CartItem from '../components/CartItem';
 import { useSelector, useDispatch } from 'react-redux';
-import { calcPriceAndItems, clearCart } from '../redux/slices/cartSlice';
+import { calcPriceAndItems, clearCart, selectCart } from '../redux/slices/cartSlice';
 import { cartThunk } from '../redux/asyncThunks/cartThunk';
 import CartSkeleton from '../components/CartItem/CartSkeleton';
 import axios from 'axios';
@@ -11,12 +11,7 @@ import CartEmpty from '../components/CartEmpty';
 export default function CartPage() {
     const dispatch = useDispatch();
 
-    const { cart, loading, totalPrice, totalItems } = useSelector((state) => ({
-        cart: state.cart.cart,
-        loading: state.cart.loading,
-        totalPrice: state.cart.totalPrice,
-        totalItems: state.cart.totalItems,
-    }));
+    const { cart, loading, totalPrice, totalItems } = useSelector(selectCart);
 
     const getData = useCallback(async (params) => {
         try {

@@ -10,6 +10,7 @@ import Header from './components/Header';
 import PizzasPage from './pages/PizzasPage';
 import NotFoundPage from './pages/NotFoundPage';
 import CartPage from './pages/CartPage';
+import DetailedPizza from './pages/DetailedPizza';
 
 export default function App() {
     return (
@@ -17,8 +18,9 @@ export default function App() {
             <Header />
 
             <Routes>
-                <Route path="/" element={<PizzasPage />} />
+                <Route index path="/" element={<PizzasPage />} />
                 <Route path="/cart" element={<CartPage />} />
+                <Route path="/pizza/:id" element={<DetailedPizza />} />
                 <Route path="*" element={<NotFoundPage />} />
             </Routes>
         </div>

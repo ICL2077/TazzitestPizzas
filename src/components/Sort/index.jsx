@@ -1,5 +1,10 @@
 import React from 'react';
-import { changeSorting, listOfSorting, changeSortIndex } from '../../redux/slices/sortingSlice';
+import {
+    changeSorting,
+    listOfSorting,
+    changeSortIndex,
+    selectSortingData,
+} from '../../redux/slices/sortingSlice';
 import { useSelector, useDispatch } from 'react-redux';
 
 export default function Sort() {
@@ -8,7 +13,7 @@ export default function Sort() {
     const searchRef = React.useRef();
 
     const [popupOpen, setPopupOpen] = React.useState(false);
-    const { curSorting, sortIndex } = useSelector((state) => state.sorting);
+    const { curSorting, sortIndex } = useSelector(selectSortingData);
 
     React.useEffect(() => {
         const handleClickOut = (event) => {

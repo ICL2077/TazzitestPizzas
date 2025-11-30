@@ -39,5 +39,11 @@ const cartSlice = createSlice({
     },
 });
 
+export const selectCart = (state) => state.cart;
+
+// селектор для нахождения идентичного товара в корзине
+export const selectCartItem = (title, size, type) => (state) =>
+    state.cart.cart.find((obj) => obj.title === title && obj.size === size && obj.type === type);
+
 export const { calcPriceAndItems, clearCart } = cartSlice.actions;
 export default cartSlice.reducer;

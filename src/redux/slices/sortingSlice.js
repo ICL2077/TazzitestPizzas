@@ -24,5 +24,7 @@ export const sortingSlice = createSlice({
     },
 });
 
+export const selectSortingData = (state) => state.sorting;
+
 export const { changeSorting, changeSortIndex } = sortingSlice.actions;
 export default sortingSlice.reducer;

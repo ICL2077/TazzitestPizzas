@@ -1,18 +1,22 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+
+// components
 import SearchInput from '../SearchInput.jsx';
-import { useSelector, useDispatch } from 'react-redux';
+
+// libs
+import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+
+// styles
 import styles from './Header.module.scss';
-import { calcPriceAndItems } from '../../redux/slices/cartSlice.js';
+
+// redux values
+import { calcPriceAndItems, selectCart } from '../../redux/slices/cartSlice.js';
 
 export default function Header() {
     const dispatch = useDispatch();
 
-    const { cart, totalPrice, totalItems } = useSelector((state) => ({
-        cart: state.cart.cart,
-        totalPrice: state.cart.totalPrice,
-        totalItems: state.cart.totalItems,
-    }));
+    const { cart, totalPrice, totalItems } = useSelector(selectCart);
 
     React.useEffect(() => {
         dispatch(calcPriceAndItems());
