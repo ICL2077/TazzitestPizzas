@@ -6,6 +6,8 @@ import { useDispatch } from 'react-redux';
 export default function CartItem({ id, imageUrl, title, type, size, price, amount }) {
     const dispatch = useDispatch();
 
+    const [amountState, setAmountState] = React.useState(amount);
+
     const handleDelete = React.useCallback(async () => {
         try {
             await axios.delete(`/api/cart/${id}`);
@@ -18,10 +20,14 @@ export default function CartItem({ id, imageUrl, title, type, size, price, amoun
     const handleDecreaseAmount = React.useCallback(async () => {
         try {
             if (amount === 1) {
+                setAmountState(0);
                 await axios.delete(`/api/cart/${id}`);
             } else {
+                const changedAmount = amount - 1;
+                setAmountState(changedAmount);
+
                 await axios.patch(`/api/cart/${id}`, {
-                    amount: amount - 1,
+                    amount: changedAmount,
                 });
             }
 
@@ -33,8 +39,11 @@ export default function CartItem({ id, imageUrl, title, type, size, price, amoun
 
     const handleIncreaseAmount = React.useCallback(async () => {
         try {
+            const addedAmount = amount + 1;
+            setAmountState(addedAmount);
+
             await axios.patch(`/api/cart/${id}`, {
-                amount: amount + 1,
+                amount: addedAmount,
             });
 
             await dispatch(cartThunk());
@@ -74,7 +83,7 @@ export default function CartItem({ id, imageUrl, title, type, size, price, amoun
                         />
                     </svg>
                 </div>
-                <b>{amount}</b>
+                <b>{amountState}</b>
                 <div
                     onClick={handleIncreaseAmount}
                     className="button button--outline button--circle cart__item-count-plus">
@@ -96,7 +105,7 @@ export default function CartItem({ id, imageUrl, title, type, size, price, amoun
                 </div>
             </div>
             <div className="cart__item-price">
-                <b>{price * amount} ₽</b>
+                <b>{amountState ? `${price * amountState} ₽` : 'Удаляем...'}</b>
             </div>
             <div onClick={handleDelete} className="cart__item-remove">
                 <div className="button button--outline button--circle">

@@ -23,13 +23,13 @@ export default function CartPage() {
 
     const handleClearCart = React.useCallback(async () => {
         try {
-            const clearAllCart = cart.map(async (item) => {
-                await axios.delete(`https://68da669423ebc87faa2fff70.mockapi.io/cart/${item.id}`);
-                dispatch(clearCart());
-            });
+            await Promise.all(
+                cart.map((item) => {
+                    return axios.delete(`/api/cart/${item.id}`);
+                }),
+            ).then(await dispatch(cartThunk()));
 
-            const result = await Promise.all(clearAllCart);
-            console.log(result);
+            dispatch(clearCart());
         } catch (error) {
             console.log(error);
         }
@@ -134,11 +134,11 @@ export default function CartPage() {
                             <div className="cart__bottom-details">
                                 <span>
                                     {' '}
-                                    Всего пицц: <b>{totalItems} шт.</b>{' '}
+                                    Всего пицц: <b>{loading ? '...' : totalItems} шт.</b>{' '}
                                 </span>
                                 <span>
                                     {' '}
-                                    Сумма заказа: <b>{totalPrice} ₽</b>{' '}
+                                    Сумма заказа: <b>{loading ? '...' : totalPrice} ₽</b>{' '}
                                 </span>
                             </div>
                             <div className="cart__bottom-buttons">

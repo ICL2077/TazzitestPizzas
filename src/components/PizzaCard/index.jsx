@@ -12,6 +12,8 @@ export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) 
     const [typeOfPizza, setTypeOfPizza] = React.useState(0);
     const [curSizeIndex, setCurSizeIndex] = React.useState(0);
 
+    const [loading, setLoading] = React.useState(false);
+
     const cartItem = useSelector(
         selectCartItem(title, sizes[curSizeIndex], arrOfTypes[typeOfPizza]),
     );
@@ -28,6 +30,8 @@ export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) 
 
     const handleAddingToCart = React.useCallback(async () => {
         try {
+            setLoading(true);
+
             const pizzaObj = {
                 id: id,
                 imageUrl: imageUrl,
@@ -42,11 +46,14 @@ export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) 
                 const newAmount = cartItem.amount + 1;
 
                 await axios.patch(`/api/cart/${cartItem.id}`, { amount: newAmount });
-
                 await dispatch(cartThunk());
+
+                setLoading(false);
             } else {
                 await axios.post(`/api/cart`, pizzaObj);
                 await dispatch(cartThunk());
+
+                setLoading(false);
             }
         } catch (error) {
             console.log(error);
@@ -83,7 +90,9 @@ export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) 
             </div>
             <div className="pizza-block__bottom">
                 <div className="pizza-block__price">от {price} ₽</div>
-                <div onClick={handleAddingToCart} className="button button--outline button--add">
+                <div
+                    onClick={!loading && handleAddingToCart}
+                    className="button button--outline button--add">
                     <svg
                         width="12"
                         height="12"
@@ -95,7 +104,9 @@ export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) 
                             fill="white"
                         />
                     </svg>
-                    <span>Добавить {amount > 0 && amount}</span>
+                    <span>
+                        {loading ? 'Добавляем...' : 'Добавить'} {amount > 0 && amount}
+                    </span>
                 </div>
             </div>
         </div>

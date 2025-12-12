@@ -1,11 +1,18 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { selectCartItem } from '../redux/slices/cartSlice';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { cartThunk } from '../redux/asyncThunks/cartThunk';
 
 const DetailedPizza = () => {
+    const dispatch = useDispatch();
+
+    const { cart } = useSelector((state) => ({
+        cart: state.cart.cart,
+    }));
+
     const { id } = useParams();
+    const navigate = useNavigate();
 
     const arrOfTypes = ['традиционный', 'без корочки'];
 
@@ -13,19 +20,18 @@ const DetailedPizza = () => {
     const [curType, setCurType] = React.useState(0);
 
     const [pizzaObj, setPizzaObj] = React.useState();
-    const [cart, setCart] = React.useState();
     const [cartItem, setCartItem] = React.useState();
 
     React.useEffect(() => {
         async function getData() {
             try {
                 const pizzaResponse = await axios.get(`/api/pizzas?id=${id}`);
-                const cartResponse = await axios.get('/api/cart');
+                await dispatch(cartThunk());
 
-                setCart(cartResponse.data);
                 setPizzaObj(pizzaResponse.data[0]);
             } catch (error) {
                 alert(error);
+                navigate('/');
             }
         }
 
@@ -34,26 +40,42 @@ const DetailedPizza = () => {
 
     React.useEffect(() => {
         if (pizzaObj && cart) {
-            async function getData() {
-                try {
-                    setCartItem(
-                        cart.find(
-                            (obj) =>
-                                obj.title === pizzaObj.title &&
-                                obj.size === pizzaObj.sizes[curSize] &&
-                                obj.type === arrOfTypes[curType],
-                        ),
-                    );
-                } catch (error) {
-                    alert(error);
-                }
-            }
-
-            getData();
+            setCartItem(
+                cart.find(
+                    (obj) =>
+                        obj.title === pizzaObj.title &&
+                        obj.size === pizzaObj.sizes[curSize] &&
+                        obj.type === arrOfTypes[curType],
+                ),
+            );
         }
     }, [curType, curSize, cart, pizzaObj]);
 
     const amount = cartItem ? cartItem.amount : 0;
+
+    const handleAddingToCart = React.useCallback(async () => {
+        try {
+            if (cartItem) {
+                const addedAmount = cartItem.amount + 1;
+                await axios.patch(`/api/cart/${cartItem.id}`, { amount: addedAmount });
+
+                await dispatch(cartThunk());
+            } else {
+                await axios.post(`/api/cart`, {
+                    imageUrl: pizzaObj.imageUrl,
+                    title: pizzaObj.title,
+                    price: pizzaObj.price,
+                    size: pizzaObj.sizes[curSize],
+                    type: arrOfTypes[curType],
+                    amount: 1,
+                });
+
+                await dispatch(cartThunk());
+            }
+        } catch (error) {
+            alert(error);
+        }
+    }, [curSize, curType, pizzaObj, cartItem]);
 
     if (!pizzaObj) {
         return (
@@ -94,7 +116,7 @@ const DetailedPizza = () => {
                     </div>
                 </div>
 
-                <button className="button button--outline button--add">
+                <button onClick={handleAddingToCart} className="button button--outline button--add">
                     Добавить в конзину {amount > 0 && amount}
                 </button>
             </div>
