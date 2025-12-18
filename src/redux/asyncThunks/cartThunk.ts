@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-export const cartThunk = createAsyncThunk('cart/fetchData', async (params) => {
+export const cartThunk = createAsyncThunk('cart/fetchData', async () => {
     const url = '/api/cart';
 
     const { data } = await axios.get(url.toString());

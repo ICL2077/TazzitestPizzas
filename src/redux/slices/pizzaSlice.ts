@@ -1,6 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { pizzaThunk } from '../asyncThunks/pizzaThunk';
 
+export interface Pizza {
+    id: number;
+    title: string;
+    category: number;
+    imageUrl: string;
+    types: number[];
+    sizes: number[];
+    price: number;
+}
+
 export const pizzaSlice = createSlice({
     name: 'pizza',
     initialState: {
@@ -23,9 +33,9 @@ export const pizzaSlice = createSlice({
     },
 });
 
-export const selectPizzaData = (state) => state.pizza;
+export const selectPizzaData = (state: any) => state.pizza;
 
-export const selectPizza = (id) => (state) =>
-    state.pizza.pizzas.find((obj) => Number(obj.id) === Number(id));
+export const selectPizza = (id: number) => (state: any) =>
+    state.pizza.pizzas.find((obj: Pizza) => Number(obj.id) === Number(id));
 
 export default pizzaSlice.reducer;

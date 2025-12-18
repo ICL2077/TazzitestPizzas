@@ -1,5 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+export interface sorting {
+    name: string;
+    type: string;
+    order: string;
+}
+
+interface initialStateTypes {
+    curSorting: sorting;
+    sortIndex: number;
+}
+
 export const listOfSorting = [
     { name: 'популярности', type: 'rating', order: 'desc' },
     { name: 'алфавиту', type: 'title', order: 'asc' },
@@ -12,7 +23,7 @@ export const sortingSlice = createSlice({
     initialState: {
         curSorting: listOfSorting[0],
         sortIndex: 0,
-    },
+    } as initialStateTypes,
 
     reducers: {
         changeSorting: (state, action) => {
@@ -24,7 +35,7 @@ export const sortingSlice = createSlice({
     },
 });
 
-export const selectSortingData = (state) => state.sorting;
+export const selectSortingData = (state: any) => state.sorting;
 
 export const { changeSorting, changeSortIndex } = sortingSlice.actions;
 export default sortingSlice.reducer;

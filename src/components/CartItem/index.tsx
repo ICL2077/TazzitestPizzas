@@ -2,9 +2,20 @@ import axios from 'axios';
 import React from 'react';
 import { cartThunk } from '../../redux/asyncThunks/cartThunk';
 import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../redux/store';
 
-export default function CartItem({ id, imageUrl, title, type, size, price, amount }) {
-    const dispatch = useDispatch();
+interface Props {
+    id: number;
+    imageUrl: string;
+    title: string;
+    type: string;
+    size: number;
+    price: number;
+    amount: number;
+}
+
+export default function CartItem({ id, imageUrl, title, type, size, price, amount }: Props) {
+    const dispatch = useDispatch<AppDispatch>();
 
     const [amountState, setAmountState] = React.useState(amount);
 
@@ -50,7 +61,7 @@ export default function CartItem({ id, imageUrl, title, type, size, price, amoun
         } catch (error) {
             console.log(error);
         }
-    });
+    }, []);
 
     return (
         <div key={id} className="cart__item">

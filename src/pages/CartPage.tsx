@@ -7,28 +7,32 @@ import { cartThunk } from '../redux/asyncThunks/cartThunk';
 import CartSkeleton from '../components/CartItem/CartSkeleton';
 import axios from 'axios';
 import CartEmpty from '../components/CartEmpty';
+import { AppDispatch } from '../redux/store';
 
 export default function CartPage() {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
 
     const { cart, loading, totalPrice, totalItems } = useSelector(selectCart);
 
-    const getData = useCallback(async (params) => {
-        try {
-            await dispatch(cartThunk(params));
-        } catch (error) {
-            console.log(error);
-        }
-    }, []);
+    interface CartItem {
+        id: number;
+        title: string;
+        imageUrl: string;
+        amount: number;
+        size: number;
+        type: string;
+        price: number;
+    }
 
     const handleClearCart = React.useCallback(async () => {
         try {
             await Promise.all(
-                cart.map((item) => {
+                cart.map((item: CartItem) => {
                     return axios.delete(`/api/cart/${item.id}`);
                 }),
-            ).then(await dispatch(cartThunk()));
+            );
 
+            await dispatch(cartThunk());
             dispatch(clearCart());
         } catch (error) {
             console.log(error);
@@ -40,6 +44,14 @@ export default function CartPage() {
     }, [cart.length]);
 
     React.useEffect(() => {
+        const getData = useCallback(async () => {
+            try {
+                await dispatch(cartThunk());
+            } catch (error) {
+                console.log(error);
+            }
+        }, []);
+
         getData();
     }, []);
 
@@ -128,7 +140,9 @@ export default function CartPage() {
                         <div className="cart__items">
                             {loading
                                 ? [...new Array(3)].map((_, index) => <CartSkeleton key={index} />)
-                                : cart.map((item) => <CartItem key={item.id} {...item} />)}
+                                : cart.map((item: CartItem) => (
+                                      <CartItem key={item.id} {...item} />
+                                  ))}
                         </div>
                         <div className="cart__bottom">
                             <div className="cart__bottom-details">

@@ -4,9 +4,21 @@ import { useSelector, useDispatch } from 'react-redux';
 import { cartThunk } from '../../redux/asyncThunks/cartThunk';
 import { selectCartItem } from '../../redux/slices/cartSlice';
 import { Link } from 'react-router-dom';
+import { AppDispatch } from '../../redux/store';
 
-export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) {
-    const dispatch = useDispatch();
+interface PizzaProps {
+    id: number;
+    title: string;
+    price: number;
+    sizes: number[];
+    types: number[];
+    imageUrl: string;
+}
+
+export default function PizzaCard(props: PizzaProps) {
+    const { id, title, price, sizes, types, imageUrl } = props;
+
+    const dispatch = useDispatch<AppDispatch>();
 
     const arrOfTypes = ['традиционный', 'без корочки'];
     const [typeOfPizza, setTypeOfPizza] = React.useState(0);
@@ -20,11 +32,11 @@ export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) 
 
     const amount = cartItem ? cartItem.amount : 0;
 
-    const handleChangeSize = (index) => {
+    const handleChangeSize = (index: number) => {
         setCurSizeIndex(index);
     };
 
-    const handleChangeType = (index) => {
+    const handleChangeType = (index: number) => {
         setTypeOfPizza(index);
     };
 
@@ -91,7 +103,9 @@ export default function PizzaCard({ id, title, price, sizes, types, imageUrl }) 
             <div className="pizza-block__bottom">
                 <div className="pizza-block__price">от {price} ₽</div>
                 <div
-                    onClick={!loading && handleAddingToCart}
+                    onClick={() => {
+                        if (!loading) handleAddingToCart;
+                    }}
                     className="button button--outline button--add">
                     <svg
                         width="12"

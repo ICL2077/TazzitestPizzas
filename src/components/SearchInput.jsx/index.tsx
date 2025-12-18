@@ -7,9 +7,9 @@ import debounce from 'lodash.debounce';
 export default function SearchInput() {
     const dispatch = useDispatch();
 
-    const inputRef = React.useRef();
+    const inputRef = React.useRef<HTMLInputElement>(null);
 
-    const searchValueInput = useSelector((state) => state.search.searchValueInpt);
+    const searchValueInput = useSelector((state: any) => state.search.searchValueInpt);
 
     const debouncedSearch = React.useCallback(
         debounce((value) => {
@@ -18,15 +18,18 @@ export default function SearchInput() {
         [],
     );
 
-    const handleInputChange = React.useCallback((event) => {
-        dispatch(searchItInpt(event.target.value));
-        debouncedSearch(event.target.value);
+    const handleInputChange = React.useCallback((value: string) => {
+        dispatch(searchItInpt(value));
+        debouncedSearch(value);
     }, []);
 
     const handleClearKey = React.useCallback(() => {
         dispatch(searchItInpt(''));
         dispatch(searchIt(''));
-        inputRef.current.focus();
+
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
     }, []);
 
     return (
@@ -37,7 +40,7 @@ export default function SearchInput() {
                 type="text"
                 placeholder="Название пиццы..."
                 value={searchValueInput}
-                onChange={(event) => handleInputChange(event)}
+                onChange={(event) => handleInputChange(event.target.value)}
             />
             {searchValueInput && (
                 <img

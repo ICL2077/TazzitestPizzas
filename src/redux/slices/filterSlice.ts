@@ -1,6 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-export const categories = ['Все', 'Мясные', 'Вегетерианские', 'Гриль', 'Острые', 'Закрытые'];
+export const categories: string[] = [
+    'Все',
+    'Мясные',
+    'Вегетерианские',
+    'Гриль',
+    'Острые',
+    'Закрытые',
+];
 
 export const filterSlice = createSlice({
     name: 'filter',

@@ -13,36 +13,38 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 // redux actions
-import { pizzaThunk } from '../redux/asyncThunks/pizzaThunk';
+import { fetchPizzaType, pizzaThunk } from '../redux/asyncThunks/pizzaThunk';
 import { cartThunk } from '../redux/asyncThunks/cartThunk';
 
-import { listOfSorting, selectSortingData } from '../redux/slices/sortingSlice';
+import { listOfSorting, selectSortingData, sorting } from '../redux/slices/sortingSlice';
 import { selectPizzaData } from '../redux/slices/pizzaSlice';
+import { AppDispatch } from '../redux/store';
+import { Pizza } from '../redux/slices/pizzaSlice';
 
 export default function PizzasPage() {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
 
     const isSearchRef = React.useRef(true);
     const blockFirstRender = React.useRef(true);
 
+    // redux values
+    const { curPage, curCategory, searchValue } = useSelector((state: any) => ({
+        curPage: state.pagination.curPage,
+        curCategory: state.filter.curCategory,
+        curSorting: state.sorting.curSorting,
+        searchValue: state.search.searchValue,
+    }));
+
     // fetch data func
-    const getData = React.useCallback(async (obj) => {
+    const getData = async (obj: fetchPizzaType) => {
         try {
             await dispatch(pizzaThunk(obj));
             isSearchRef.current = false; // разблокировка useEffect
         } catch (error) {
             console.log(error);
         }
-    }, []);
-
-    // redux values
-    const { curPage, curCategory, searchValue } = useSelector((state) => ({
-        curPage: state.pagination.curPage,
-        curCategory: state.filter.curCategory,
-        curSorting: state.sorting.curSorting,
-        searchValue: state.search.searchValue,
-    }));
+    };
 
     //selectors
     const { pizzas, loading } = useSelector(selectPizzaData);
@@ -59,9 +61,9 @@ export default function PizzasPage() {
             getData({
                 curPage: Number(params.curPage),
                 curCategory: Number(params.curCategory), // используем Number так как спарсенные значения являются строками
-                curSorting: listOfSorting[params.sortIndex], // берем объект сортировки исходя из переданного индекса сортировки (в curSorting возвращается строка type)
+                curSorting: listOfSorting[Number(params.sortIndex)], // берем объект сортировки исходя из переданного индекса сортировки (в curSorting возвращается строка type)
                 sortIndex: Number(params.sortIndex),
-                searchValue: params.searchValue,
+                searchValue: params.searchValue as string,
             });
         } else {
             getData({ curPage, curCategory, curSorting, sortIndex, searchValue });
@@ -110,7 +112,7 @@ export default function PizzasPage() {
                     {loading ? (
                         [...new Array(4)].map((_, index) => <Skeleton key={index} />)
                     ) : pizzas.length > 0 ? (
-                        pizzas.map((pizza) => <PizzaCard key={pizza.id} {...pizza} />)
+                        pizzas.map((pizza: Pizza) => <PizzaCard key={pizza.id} {...pizza} />)
                     ) : (
                         <div className="error">
                             <h1>Произошла ошибка!</h1>

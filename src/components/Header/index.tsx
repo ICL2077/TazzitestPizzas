@@ -1,7 +1,7 @@
 import React from 'react';
 
 // components
-import SearchInput from '../SearchInput.jsx';
+import SearchInput from '../SearchInput.jsx/index.jsx';
 
 // libs
 import { Link } from 'react-router-dom';

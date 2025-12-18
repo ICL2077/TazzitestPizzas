@@ -4,23 +4,44 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { cartThunk } from '../redux/asyncThunks/cartThunk';
 
-const DetailedPizza = () => {
-    const dispatch = useDispatch();
+import { AppDispatch } from '../redux/store';
 
-    const { cart } = useSelector((state) => ({
+const DetailedPizza = () => {
+    const dispatch = useDispatch<AppDispatch>();
+
+    const { cart } = useSelector((state: any) => ({
         cart: state.cart.cart,
     }));
 
     const { id } = useParams();
     const navigate = useNavigate();
 
-    const arrOfTypes = ['традиционный', 'без корочки'];
+    const arrOfTypes: string[] = ['традиционный', 'без корочки'];
 
-    const [curSize, setCurSize] = React.useState(0);
-    const [curType, setCurType] = React.useState(0);
+    const [curSize, setCurSize] = React.useState<number>(0);
+    const [curType, setCurType] = React.useState<number>(0);
 
-    const [pizzaObj, setPizzaObj] = React.useState();
-    const [cartItem, setCartItem] = React.useState();
+    interface Pizza {
+        id: number;
+        title: string;
+        imageUrl: string;
+        types: number[];
+        sizes: number[];
+        price: number;
+    }
+
+    interface CartItem {
+        id: number;
+        title: string;
+        imageUrl: string;
+        type: string;
+        size: number;
+        price: number;
+        amount: number;
+    }
+
+    const [pizzaObj, setPizzaObj] = React.useState<Pizza>();
+    const [cartItem, setCartItem] = React.useState<CartItem>();
 
     React.useEffect(() => {
         async function getData() {
@@ -42,7 +63,7 @@ const DetailedPizza = () => {
         if (pizzaObj && cart) {
             setCartItem(
                 cart.find(
-                    (obj) =>
+                    (obj: CartItem) =>
                         obj.title === pizzaObj.title &&
                         obj.size === pizzaObj.sizes[curSize] &&
                         obj.type === arrOfTypes[curType],
@@ -51,12 +72,16 @@ const DetailedPizza = () => {
         }
     }, [curType, curSize, cart, pizzaObj]);
 
+    if (!pizzaObj) {
+        return <h1>Загрузка</h1>;
+    }
+
     const amount = cartItem ? cartItem.amount : 0;
 
     const handleAddingToCart = React.useCallback(async () => {
         try {
             if (cartItem) {
-                const addedAmount = cartItem.amount + 1;
+                const addedAmount: number = cartItem.amount + 1;
                 await axios.patch(`/api/cart/${cartItem.id}`, { amount: addedAmount });
 
                 await dispatch(cartThunk());
@@ -76,14 +101,6 @@ const DetailedPizza = () => {
             alert(error);
         }
     }, [curSize, curType, pizzaObj, cartItem]);
-
-    if (!pizzaObj) {
-        return (
-            <>
-                <h1>Загрузка</h1>
-            </>
-        );
-    }
 
     return (
         <div className="container">

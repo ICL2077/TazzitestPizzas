@@ -5,9 +5,9 @@ import { clickOnCat, categories } from '../../redux/slices/filterSlice.js';
 export default function Categories() {
     const dispatch = useDispatch();
 
-    const curCategory = useSelector((state) => state.filter.curCategory);
+    const curCategory = useSelector((state: any) => state.filter.curCategory);
 
-    const handleCategoryChange = React.useCallback((index) => {
+    const handleCategoryChange = React.useCallback((index: number) => {
         dispatch(clickOnCat(index));
     }, []);
 

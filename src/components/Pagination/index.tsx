@@ -8,7 +8,7 @@ import styles from './Pagination.module.scss';
 export default function Pagination() {
     const dispatch = useDispatch();
 
-    const handlePageChange = React.useCallback((value) => {
+    const handlePageChange = React.useCallback((value: number) => {
         dispatch(changePage(value));
     }, []);
 
